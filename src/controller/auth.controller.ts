@@ -10,37 +10,34 @@ interface accessTokenResponse {
   scope: string;
 }
 
+interface fatSecretArgs {
+  (clientId: string, clientSecret: string): Promise<accessTokenResponse | Error>;
+}
+
 class Auth {
-  private client_id: string;
-  private client_secret: string;
+  static fatSecret: fatSecretArgs = async (clientId, clientSecret) => {
+    const options = {
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+      },
+      auth: {
+        username: clientId,
+        password: clientSecret,
+      },
+    };
 
-  constructor(clientId: string, clientSecret: string) {
-    this.client_id = clientId;
-    this.client_secret = clientSecret;
-  }
-
-  async getAccessToken(): Promise<Error> {
     try {
       const response = await axios.post(
         'https://oauth.fatsecret.com/connect/token',
         querystring.stringify({ grant_type: 'client_credentials', scope: 'basic' }),
-        {
-          headers: {
-            'content-type': 'application/x-www-form-urlencoded',
-          },
-          auth: {
-            username: this.client_id,
-            password: this.client_secret,
-          },
-        }
+        options
       );
 
       return response.data;
     } catch (error) {
-      // console.error(error);
       throw new Error('Error getting access token');
     }
-  }
+  };
 }
 
 export default Auth;
