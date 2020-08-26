@@ -7,14 +7,13 @@ dotenv.config();
 jest.mock('axios');
 
 describe('auth to FatSecret API', () => {
-  const responseMock = {
-    access_token: expect.any(String),
-    expires_in: expect.any(Number),
-    token_type: expect.any(String),
-    scope: expect.any(String),
-  };
-
   it('get the token', async () => {
+    const responseMock = {
+      access_token: expect.any(String),
+      expires_in: expect.any(Number),
+      token_type: expect.any(String),
+      scope: expect.any(String),
+    };
     const client_id = process.env.CLIENT_ID;
     const client_secret = process.env.CLIENT_SECRET;
 
