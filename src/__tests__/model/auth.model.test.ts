@@ -5,11 +5,17 @@ import AuthModel from '../../model/auth.model';
 jest.mock('axios');
 
 describe('Model tests', () => {
-  // afterAll(() => {
-  //   AuthModel.disconnect();
-  // });
+  let authModel: AuthModel;
 
-  xit('should save the acquired token to the redis database', async () => {
+  beforeAll(() => {
+    authModel = new AuthModel();
+  });
+
+  afterAll(() => {
+    authModel.disconnect();
+  });
+
+  it('should save the acquired token to the redis database', async () => {
     const responseMock = {
       access_token: 'a beautiful token',
       expires_in: 86400,
@@ -21,14 +27,25 @@ describe('Model tests', () => {
 
     const authToken = await Auth.fatSecret('client_id', 'client_secret');
 
-    AuthModel.save('fatSecretAuth', authToken);
+    authModel.save('fatSecretAuth', authToken);
 
-    expect(AuthModel.get('fatSecretAuth')).toEqual(authToken);
+    expect(await authModel.get('fatSecretAuth')).toEqual(authToken);
   });
 
-  xit('should get the token from the database', () => {
-    AuthModel.save('fakeEntry', { some: 'fakeData' });
+  it('should get the token from the database', async () => {
+    const fakeObj = {
+      access_token: 'a beautiful token',
+      expires_in: 86400,
+      token_type: 'Bearer',
+      scope: 'basic',
+    };
 
-    expect(AuthModel.get('fakeEntry')).toEqual({ some: 'fakeData' });
+    authModel.save('fakeEntry', fakeObj);
+
+    expect(await authModel.get('fakeEntry')).toEqual(fakeObj);
+  });
+
+  it('try to get an unexistent key from redis', async () => {
+    expect(authModel.get).rejects.toThrowError('Key not found on redis');
   });
 });

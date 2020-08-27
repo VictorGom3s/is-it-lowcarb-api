@@ -3,7 +3,7 @@ import querystring from 'querystring';
 import dotenv from 'dotenv';
 dotenv.config();
 
-interface accessTokenResponse {
+export interface accessTokenResponse {
   access_token: string;
   expires_in: number;
   token_type: string;
@@ -11,7 +11,7 @@ interface accessTokenResponse {
 }
 
 interface fatSecretArgs {
-  (clientId: string, clientSecret: string): Promise<accessTokenResponse | Error>;
+  (clientId: string, clientSecret: string): Promise<accessTokenResponse>;
 }
 
 class Auth {
