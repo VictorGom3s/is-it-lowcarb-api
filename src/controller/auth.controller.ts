@@ -1,7 +1,8 @@
 import axios from 'axios';
 import querystring from 'querystring';
-import dotenv from 'dotenv';
-dotenv.config();
+import AuthModel from '../model/auth.model';
+
+const model = new AuthModel();
 
 export interface accessTokenResponse {
   access_token: string;
@@ -32,6 +33,8 @@ class Auth {
         querystring.stringify({ grant_type: 'client_credentials', scope: 'basic' }),
         options
       );
+
+      model.save('fatSecretAuth', response.data);
 
       return response.data;
     } catch (error) {

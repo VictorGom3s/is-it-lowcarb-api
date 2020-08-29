@@ -1,23 +1,15 @@
-import Redis from 'ioredis';
+import db from '../config/db';
 import { accessTokenResponse } from '../controller/auth.controller';
 
 class AuthModel {
-  private redis: Redis.Redis;
-
-  constructor() {
-    this.redis = new Redis();
-  }
-
-  disconnect() {
-    return this.redis.disconnect();
-  }
-
   save(key: string, value: accessTokenResponse) {
     try {
-      this.redis.hset(key, 'access_token', value.access_token);
-      this.redis.hset(key, 'expires_in', value.expires_in);
-      this.redis.hset(key, 'token_type', value.token_type);
-      this.redis.hset(key, 'scope', value.scope);
+      db.multi()
+        .hset(key, 'access_token', value.access_token)
+        .hset(key, 'expires_in', value.expires_in)
+        .hset(key, 'token_type', value.token_type)
+        .hset(key, 'scope', value.scope)
+        .exec();
     } catch (error) {
       console.error(error);
     }
@@ -25,7 +17,7 @@ class AuthModel {
 
   async get(key: string) {
     try {
-      const result = await this.redis.hgetall(key);
+      const result = await db.hgetall(key);
       const newExpiresIn = parseInt(result.expires_in, 10);
       return { ...result, expires_in: newExpiresIn };
     } catch (error) {

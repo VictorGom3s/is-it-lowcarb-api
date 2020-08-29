@@ -3,14 +3,14 @@ import helmet from 'helmet';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-import Redis from 'ioredis';
+import Auth from './controller/auth.controller';
 
 dotenv.config();
 
-const redis = new Redis();
-
 const PORT = process.env.PORT || 8080;
 const app = express();
+
+Auth.fatSecret(process.env.CLIENT_ID as string, process.env.CLIENT_SECRET as string);
 
 app.use(cors());
 app.use(helmet());

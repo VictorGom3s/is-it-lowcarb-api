@@ -8,7 +8,7 @@
     "dev": "nodemon src/app.ts",
     "build": "tsc -p .",
     "test": "jest",
-    "tdd": "jest --watch"
+    "tdd": "jest --watch --detectOpenHandles"
   },
   "keywords": [],
   "author": "",
