@@ -1,8 +1,12 @@
 import db from '../config/db';
-import { accessTokenResponse } from '../controller/auth.controller';
-
-class AuthModel {
-  save(key: string, value: accessTokenResponse) {
+interface tokenObj {
+  access_token: string;
+  expires_in: number | string;
+  token_type: string;
+  scope: string;
+}
+export default class Auth {
+  save(key: string, value: tokenObj) {
     try {
       db.multi()
         .hset(key, 'access_token', value.access_token)
@@ -11,19 +15,12 @@ class AuthModel {
         .hset(key, 'scope', value.scope)
         .exec();
     } catch (error) {
-      console.error(error);
+      throw new Error('Error saving auth info to redis. ' + error);
     }
   }
 
   async get(key: string) {
-    try {
-      const result = await db.hgetall(key);
-      const newExpiresIn = parseInt(result.expires_in, 10);
-      return { ...result, expires_in: newExpiresIn };
-    } catch (error) {
-      throw new Error('Key not found on redis');
-    }
+    const result = await db.hgetall(key);
+    return result;
   }
 }
-
-export default AuthModel;
