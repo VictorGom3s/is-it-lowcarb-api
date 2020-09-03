@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../config/axios.config';
 import AuthModel from '../model/auth.model';
 import qs from 'qs';
 export default class Auth {

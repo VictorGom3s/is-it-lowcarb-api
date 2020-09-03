@@ -5,13 +5,25 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import food from './routes/food.route';
 import Auth from './controller/auth.controller';
+import { CronJob } from 'cron';
 
 dotenv.config();
 
 const PORT = process.env.PORT || 8080;
 const app = express();
 
-// Auth.fatSecret(process.env.CLIENT_ID as string, process.env.CLIENT_SECRET as string);
+const job = new CronJob(
+  '00 00 00 * * *',
+  () => {
+    Auth.fatSecret(process.env.CLIENT_ID as string, process.env.CLIENT_SECRET as string);
+  },
+  null,
+  true,
+  'America/Sao_Paulo',
+  null,
+  true
+);
+job.start();
 
 app.use(cors());
 app.use(helmet());
