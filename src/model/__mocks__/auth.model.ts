@@ -1,10 +1,22 @@
-import db from '../config/db';
+import db from '../../config/db';
+jest.mock('../../config/db');
+
 interface tokenObj {
   access_token: string;
   expires_in: number | string;
   token_type: string;
   scope: string;
 }
+
+(db.multi as jest.Mock).mockReturnThis();
+(db.hset as jest.Mock).mockReturnThis();
+(db.hgetall as jest.Mock).mockResolvedValue({
+  access_token: 'a token',
+  expires_in: 86400,
+  token_type: 'Bearer',
+  scope: 'basic',
+});
+
 export default class Auth {
   static save(key: string, value: tokenObj) {
     try {

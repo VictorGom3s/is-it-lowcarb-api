@@ -1,12 +1,26 @@
 import axios from 'axios';
-import db from './../config/db';
+import AuthModel from '../model/auth.model';
+import qs from 'qs';
 export default class Auth {
-  static fatSecret(clientId: string, clientSecret: string) {
-    /* Check if it's already authenticated */
-    /*if it is, check if it need refreshing*/
-    /*if yes, refresh token*/
-    this.refreshToken();
-  }
+  static async fatSecret(clientId: string, clientSecret: string) {
+    try {
+      const { data: result } = await axios.post(
+        'https://oauth.fatsecret.com/connect/token',
+        qs.stringify({ grant_type: 'client_credentials', scope: 'basic' }),
+        {
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded',
+          },
+          auth: {
+            username: clientId,
+            password: clientSecret,
+          },
+        }
+      );
 
-  private static refreshToken() {}
+      AuthModel.save('fatSecret', result);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
