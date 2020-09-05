@@ -16,6 +16,7 @@ const job = new CronJob(
   '00 00 00 * * *',
   () => {
     Auth.fatSecret(process.env.CLIENT_ID as string, process.env.CLIENT_SECRET as string);
+    console.log('Token refreshed');
   },
   null,
   true,
