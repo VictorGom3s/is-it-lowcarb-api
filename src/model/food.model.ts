@@ -1,12 +1,9 @@
 import db from '../config/db';
 
 interface FoodI {
-  name: string;
+  id: number;
   lowcarb: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  fiber: number;
+  isCached: number;
 }
 
 class Foodstore {
@@ -24,12 +21,9 @@ class Foodstore {
       key = key.toLowerCase();
 
       db.multi()
-        .hset(key, 'name', food.name)
+        .hset(key, 'id', food.id)
         .hset(key, 'lowcarb', food.lowcarb)
-        .hset(key, 'protein', food.protein)
-        .hset(key, 'carbs', food.carbs)
-        .hset(key, 'fat', food.fat)
-        .hset(key, 'fiber', food.fiber)
+        .hset(key, 'isCached', food.isCached)
         .exec();
     } catch (error) {
       throw new Error('Error saving food into the store: ' + error);

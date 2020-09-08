@@ -1,30 +1,55 @@
 import { Request, Response } from 'express';
 import Food from '../../controller/food.controller';
+import Foodstore from '../../model/food.model';
+import axios from '../../config/axios.config';
+
+jest.mock('../../model/food.model');
+jest.mock('../../config/axios.config');
 
 describe('Food', () => {
   const food = new Food();
 
-  it('get the food from the store or from the API', async () => {
-    const req = { body: { food: 'cheese' } };
-    const res = { send: jest.fn() };
+  const responseMock = { send: jest.fn(), status: jest.fn() };
+  (responseMock.status as jest.Mock).mockReturnThis();
 
-    await food.get((req as unknown) as Request, (res as unknown) as Response);
-
-    expect(res.send).toHaveBeenCalledTimes(1);
-    expect(res.send).not.toHaveBeenCalledWith({});
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('return error to user if food name not provided', async () => {
-    const req = { body: {} };
-    const res = { send: jest.fn(), status: jest.fn() };
+  it('get the food from the API', async () => {
+    const requestMock = { params: { food: 'potato' } };
 
-    (res.status as jest.Mock).mockReturnThis();
+    (axios.get as jest.Mock).mockResolvedValueOnce({ foods: { foods: { food: { food_id: 1 } } } });
+    (axios.get as jest.Mock).mockResolvedValueOnce({
+      food: {
+        servings: {
+          serving: [{ serving_description: '100 g' }],
+        },
+      },
+    });
 
-    await food.get((req as unknown) as Request, (res as unknown) as Response);
+    await food.get((requestMock as unknown) as Request, (responseMock as unknown) as Response);
 
-    expect(res.send).toHaveBeenCalledTimes(1);
-    expect(res.send).toHaveBeenCalledWith('Internal Server Error');
+    expect(responseMock.send).toHaveBeenCalledTimes(1);
+    expect(responseMock.send).not.toHaveBeenCalledWith({});
   });
 
-  xit('save food to the store', () => {});
+  it("return an error to the user if food's name were not provided", async () => {
+    const requestMock = { body: {}, params: {} };
+
+    await food.get((requestMock as unknown) as Request, (responseMock as unknown) as Response);
+
+    expect(responseMock.send).toHaveBeenCalledTimes(1);
+    expect(responseMock.send).toHaveBeenCalledWith('Internal Server Error: Missing parameter food');
+  });
+
+  it('save if the food is lowcarb or not', () => {
+    const requestMock = { body: { food: 'orange', lowcarb: false, id: 12468 } };
+
+    food.save((requestMock as unknown) as Request, (responseMock as unknown) as Response);
+
+    expect(Foodstore.set).toHaveBeenCalledTimes(1);
+    expect(responseMock.send).toHaveBeenCalledTimes(1);
+    expect(responseMock.send).toHaveBeenCalledWith('Food succesfully saved');
+  });
 });
