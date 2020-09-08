@@ -4,4 +4,4 @@
 
 
 <br/>
-<h4>Food's information powered by FatSecret and</h4>
+Food's information powered by FatSecret and
