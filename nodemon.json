@@ -1,7 +1,7 @@
 {
   "restartable": "rs",
-  "ignore": [".git", "node_modules/**/node_modules"],
   "verbose": true,
+  "ignore": [".git", "node_modules/**/node_modules"],
   "execMap": {
     "ts": "node --require ts-node/register"
   },

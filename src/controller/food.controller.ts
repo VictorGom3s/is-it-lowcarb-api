@@ -4,6 +4,7 @@ import axios from '../config/axios.config';
 
 class Food {
   async get(req: Request, res: Response) {
+    console.log('Getting food request');
     try {
       const { food: name } = req.params;
 
@@ -15,7 +16,12 @@ class Food {
         const { data: foods } = await axios.get(
           `https://platform.fatsecret.com/rest/server.api?method=foods.search&search_expression=${name}&weight=100&format=json`
         );
-        const foodID = foods.foods.food[0].food_id;
+
+        const bestOptions = foods.foods.food.filter((food: { food_type: string }) => {
+          return food.food_type === 'Generic';
+        });
+
+        const foodID = bestOptions[0].food_id;
 
         const { data: apiFood } = await axios.get(
           `https://platform.fatsecret.com/rest/server.api?method=food.get.v2&food_id=${foodID}&format=json`
@@ -34,6 +40,7 @@ class Food {
           protein: serving100grams[0].protein,
           fat: serving100grams[0].fat,
           fiber: serving100grams[0].fiber,
+          sugar: serving100grams[0].sugar,
           isCached: false,
         });
       }
@@ -43,7 +50,9 @@ class Food {
       return res.status(500).send('Internal Server ' + error);
     }
   }
+
   save(req: Request, res: Response) {
+    console.log('Saving to redis request');
     try {
       const { food, lowcarb, id } = req.body;
 
