@@ -50,7 +50,7 @@ class Food {
       `https://platform.fatsecret.com/rest/server.api?method=foods.search&search_expression=${name}&weight=100&format=json`
     );
 
-    if (foods.foods.length <= 0) throw new Error('Nothing Found!');
+    if (!foods || foods.foods.length <= 0) throw new Error('Nothing Found!');
 
     return foods.foods.food;
   }
