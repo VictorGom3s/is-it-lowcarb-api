@@ -26,11 +26,7 @@ const job = new CronJob(
 );
 job.start();
 
-app.use(
-  cors({
-    origin: 'https://isitlowcarb.netlify.app/',
-  })
-);
+app.use(cors());
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
