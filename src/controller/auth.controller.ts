@@ -17,6 +17,7 @@ export default class Auth {
           },
         }
       );
+      console.log(result);
 
       AuthModel.save('fatSecret', result);
     } catch (error) {
